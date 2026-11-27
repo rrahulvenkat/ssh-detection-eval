@@ -7,10 +7,10 @@ Data: `OpenSSH_2k.log_structured.csv` (2,000 lines, 2000 labelled, 532 real logi
 | | regex | llm | llm, no checks |
 |---|---|---|---|
 | Attempt precision | 100.0% | 100.0% | 43.4% |
-| Attempt recall | 99.8% | 98.5% | 72.7% |
+| Attempt recall | 100.0% | 98.5% | 72.7% |
 | Event-type accuracy | doesn't label | 99.8% | 88.8% |
-| IP correct on login lines | 99.8% | 100.0% | 100.0% |
-| User correct on login lines | 99.8% | 99.8% | 99.8% |
+| IP correct on login lines | 100.0% | 100.0% | 100.0% |
+| User correct on login lines | 100.0% | 99.8% | 99.8% |
 | Brute-force IPs found | 11 of 11 | 9 of 11 | 8 of 11 |
 | False brute-force alarms | 0 | 0 | 0 |
 | Time | 0.01 s | 1124.03 s | 1124.03 s |
@@ -19,8 +19,7 @@ Data: `OpenSSH_2k.log_structured.csv` (2,000 lines, 2000 labelled, 532 real logi
 
 ## Where the counts differ
 
-**regex:** 531 attempts counted correctly, 0 extra, 1 missed.
-- missed, by template: E10 ×1
+**regex:** 532 attempts counted correctly, 0 extra, 0 missed.
 
 **llm:** 524 attempts counted correctly, 0 extra, 8 missed.
 - missed, by template: E14 ×8
@@ -45,11 +44,11 @@ Data: `OpenSSH_2k.log_structured.csv` (2,000 lines, 2000 labelled, 532 real logi
 | 187.141.143.180 | 80 | 80 ✓ | 80 ✓ | 131 ✓ |
 | 103.99.0.122 | 46 | 46 ✓ | 46 ✓ | 58 ✓ |
 | 112.95.230.3 | 26 | 26 ✓ | 26 ✓ | 50 ✓ |
-| 5.188.10.180 | 20 | 19 ✓ | 20 ✓ | 13 ✓ |
+| 5.188.10.180 | 20 | 20 ✓ | 20 ✓ | 13 ✓ |
 | 185.190.58.151 | 18 | 18 ✓ | 18 ✓ | 10 ✓ |
 | 123.235.32.19 | 7 | 7 ✓ | 7 ✓ | 14 ✓ |
-| 5.36.59.76 | 6 | 6 ✓ | 2 missed | 2 missed |
-| 119.4.203.64 | 6 | 6 ✓ | 6 ✓ | 2 missed |
 | 106.5.5.195 | 6 | 6 ✓ | 2 missed | 4 missed |
+| 119.4.203.64 | 6 | 6 ✓ | 6 ✓ | 2 missed |
+| 5.36.59.76 | 6 | 6 ✓ | 2 missed | 2 missed |
 | 60.2.12.12 | 5 | 5 ✓ | 5 ✓ | 10 ✓ |
 

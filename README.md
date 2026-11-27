@@ -23,9 +23,9 @@ lines (729 distinct), 532 real login attempts, 11 brute-force IPs
 | | regex | LLM + checks | LLM alone |
 |---|---|---|---|
 | Attempt precision | **100.0%** | **100.0%** | 43.4% |
-| Attempt recall | **99.8%** | 98.5% | 72.7% |
+| Attempt recall | **100.0%** | 98.5% | 72.7% |
 | Event-type accuracy | doesn't label | 99.8% | 88.8% |
-| IP correct on login lines | 99.8% | **100.0%** | 100.0% |
+| IP correct on login lines | **100.0%** | **100.0%** | 100.0% |
 | Brute-force IPs found | **11 of 11** | 9 of 11 | 8 of 11 |
 | False brute-force alarms | 0 | 0 | 0 |
 | Time | **0.01 s** | 18.7 min | 18.7 min |
@@ -33,7 +33,8 @@ lines (729 distinct), 532 real login attempts, 11 brute-force IPs
 | Cost | **$0** | $0.65 | $0.65 |
 
 "LLM alone" scores the model's raw answers, before the agent's own checks
-corrected them. Full report: [results/REPORT.md](results/REPORT.md).
+corrected them. Full report: [results/REPORT.md](results/REPORT.md). The regex
+column is after the fix in finding 2; before it, recall was 99.8%.
 
 ## What it found
 
@@ -53,13 +54,15 @@ The agent's checks compare each label with sshd's fixed wording and fixed
 every one of these. With them the LLM matches the regex tool; without them
 precision falls to 43%.
 
-**2. Attackers can slip past the regex.** One attacker tried the username
-` 0101`, with a leading space. The regex tool's pattern expects a username with
-no spaces, so it missed the attempt completely. Claude counted it (though it
-dropped the space from the username). Spaces in usernames are a known way to
-get past detection rules written like this. The fix has to take the *last*
-`from <ip> port <n>` on the line, or an attacker could put a fake
-`from 1.2.3.4 port 1` inside the username to frame another IP.
+**2. The evaluation found a way past the regex, and it's now fixed.** One
+attacker tried the username ` 0101`, with a leading space. The regex tool's
+pattern expected a username with no spaces, so it missed the attempt
+completely; Claude counted it (though it dropped the space). The username is
+chosen by the attacker, so it can contain anything. The
+[fix](https://github.com/rrahulvenkat/ssh-log-analyzer) takes the *last*
+`from <ip> port <n>` on the line, so a fake `from 1.2.3.4 port 1` inside the
+username can't frame another IP, and the report quotes usernames with hidden
+spaces. Re-scored, the regex tool counts 532 of 532 attempts.
 
 **3. Both tools lose information at a design level.** The agent counts
 `message repeated 5 times: [ Failed password ... ]` as one attempt, not five,
