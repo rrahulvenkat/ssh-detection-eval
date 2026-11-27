@@ -22,19 +22,20 @@ lines (729 distinct), 532 real login attempts, 11 brute-force IPs
 
 | | regex | LLM + checks | LLM alone |
 |---|---|---|---|
-| Attempt precision | **100.0%** | **100.0%** | 43.4% |
-| Attempt recall | **100.0%** | 98.5% | 72.7% |
+| Attempt precision | **100.0%** | **100.0%** | 43.9% |
+| Attempt recall | **100.0%** | **100.0%** | 74.2% |
 | Event-type accuracy | doesn't label | 99.8% | 88.8% |
 | IP correct on login lines | **100.0%** | **100.0%** | 100.0% |
-| Brute-force IPs found | **11 of 11** | 9 of 11 | 8 of 11 |
+| Brute-force IPs found | **11 of 11** | **11 of 11** | 10 of 11 |
 | False brute-force alarms | 0 | 0 | 0 |
 | Time | **0.01 s** | 18.7 min | 18.7 min |
 | API calls | 0 | 727 | 727 |
 | Cost | **$0** | $0.65 | $0.65 |
 
 "LLM alone" scores the model's raw answers, before the agent's own checks
-corrected them. Full report: [results/REPORT.md](results/REPORT.md). The regex
-column is after the fix in finding 2; before it, recall was 99.8%.
+corrected them. Full report: [results/REPORT.md](results/REPORT.md). Both tools
+are shown after the fixes in findings 2 and 3, which this evaluation found;
+before them, regex recall was 99.8% and the agent found 9 of 11 attackers.
 
 ## What it found
 
@@ -52,7 +53,7 @@ were wrong on 158 of 729 distinct lines, in two systematic ways:
 
 The agent's checks compare each label with sshd's fixed wording and fixed
 every one of these. With them the LLM matches the regex tool; without them
-precision falls to 43%.
+precision falls to 44%.
 
 **2. The evaluation found a way past the regex, and it's now fixed.** One
 attacker tried the username ` 0101`, with a leading space. The regex tool's
@@ -64,10 +65,15 @@ chosen by the attacker, so it can contain anything. The
 username can't frame another IP, and the report quotes usernames with hidden
 spaces. Re-scored, the regex tool counts 532 of 532 attempts.
 
-**3. Both tools lose information at a design level.** The agent counts
-`message repeated 5 times: [ Failed password ... ]` as one attempt, not five,
-which hides 2 of the 11 brute-force IPs. A perfect model wouldn't fix this:
-the `--llm fake` run below shows the same gap. It's in the tool, not the model.
+**3. Some errors are in the tool, not the model, and it's now fixed.** The
+agent counted `message repeated 5 times: [ Failed password ... ]` as one
+attempt, not five, which hid 2 of the 11 brute-force IPs. The `--llm fake` run
+(a perfect stand-in model) showed the same gap, which proved a better model
+couldn't fix it. The
+[fix](https://github.com/rrahulvenkat/log-analyzer-agent) reads N from the
+text with a fixed rule, not from Claude, so a wrong or injected answer can't
+change the count. Re-scored from the saved answers (no new API calls), the
+agent counts 532 of 532 attempts and finds all 11 attackers.
 
 **4. Cost and speed.** For this log the LLM took 18.7 minutes and $0.65 for
 work the regex does in a hundredth of a second for free. Its advantage is

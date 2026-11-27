@@ -126,8 +126,10 @@ def test_full_run_with_the_perfect_stand_in_model():
         text = (Path(tmp) / "r.md").read_text()
         # A perfect model labels every unambiguous line correctly...
         assert "| Event-type accuracy | doesn't label | 100.0% |" in text
-        # ...and the only attempts the agent misses are the "message repeated" ones.
-        assert "missed, by template: E14 ×8" in text
+        # ...and, since the agent counts "message repeated N times" as N, it then
+        # gets every attempt and every attacker (before that fix it missed 8).
+        assert "**llm:** 532 attempts counted correctly, 0 extra, 0 missed." in text
+        assert "| Brute-force IPs found | 11 of 11 | 11 of 11 |" in text
 
 
 if __name__ == "__main__":

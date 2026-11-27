@@ -13,6 +13,7 @@ import csv
 import importlib.util
 import io
 import json
+import re
 import sqlite3
 import tempfile
 import time
@@ -168,9 +169,11 @@ def run_llm(csv_path, year, threshold, window, client,
 
         verdicts = {}
         conn = sqlite3.connect(db)
-        for line_id, event_type, ip, user in conn.execute(
-                "SELECT line_id, event_type, ip_address, username FROM ssh_logs"):
-            verdicts[line_id] = Verdict(attempts=1 if event_type == "failed_login" else 0,
+        # The agent stores how many attempts each line stands for ("message
+        # repeated N times" is N), and that's what its detection counts.
+        for line_id, event_type, ip, user, attempts in conn.execute(
+                "SELECT line_id, event_type, ip_address, username, attempts FROM ssh_logs"):
+            verdicts[line_id] = Verdict(attempts=attempts or 0,
                                         event_type=event_type, ip=ip, user=user)
         conn.close()
 
@@ -210,7 +213,12 @@ def run_llm_unchecked(csv_path, raw_answers, brute_force, threshold, window, tim
         answer = raw_answers.get(f"<log_line>{row['Content'].strip()}</log_line>")
         if not answer:
             continue
-        attempts = 1 if answer["event_type"] == "failed_login" else 0
+        # Counted the way the agent counts (a fixed rule on the text), so this
+        # column differs from the agent only in the model's own answers.
+        attempts = 0
+        if answer["event_type"] == "failed_login":
+            repeated = re.match(r"message repeated (\d+) times: \[", row["Content"].strip())
+            attempts = int(repeated[1]) if repeated else 1
         verdicts[line_id] = Verdict(attempts=attempts, event_type=answer["event_type"],
                                     ip=answer["ip_address"], user=answer["username"])
         pseudo[line_id] = Truth(line_id, "", answer["event_type"], False, attempts,
