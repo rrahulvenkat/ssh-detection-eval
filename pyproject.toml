@@ -1,0 +1,11 @@
+[project]
+name = "ssh-detection-eval"
+version = "0.1.0"
+description = "Compare regex and LLM SSH brute-force detection on the same labelled data"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "anthropic>=1.7.0",
+    "pydantic>=2.0",
+    "python-dotenv>=1.2.3",
+]

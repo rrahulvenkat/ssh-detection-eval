@@ -1,0 +1,9 @@
+{
+ "api_calls": 727,
+ "cost_usd": 0.6489,
+ "seconds": 1124.03,
+ "notes": [
+  "2 more calls ($0.0018) were made in a 3-line test before the full run",
+  "input/output token split not recorded for this run"
+ ]
+}

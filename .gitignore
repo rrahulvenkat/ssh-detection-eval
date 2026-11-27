@@ -1,0 +1,18 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+
+# Virtual environments
+.venv
+
+# Secrets
+.env
+
+# Log data: download it yourself (see the README), never commit logs
+data/
+
+# Cached model answers (contain log lines); rebuild by re-running
+results/llm_cache.json
+
+# macOS
+.DS_Store
