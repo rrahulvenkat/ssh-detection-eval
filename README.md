@@ -4,6 +4,12 @@
 rule-based detector and an LLM-based detector on the same SSH logs, scores
 both against an independent answer key, and measures accuracy, cost and speed.
 
+> **Part of a four-step series on SSH brute-force detection:**
+> 1. [ssh-log-analyzer](https://github.com/rrahulvenkat/ssh-log-analyzer): regex rules
+> 2. [log-analyzer-agent](https://github.com/rrahulvenkat/log-analyzer-agent): Claude reads each line
+> 3. **ssh-detection-eval** (this repo): the two compared
+> 4. [ssh-hybrid-detector](https://github.com/rrahulvenkat/ssh-hybrid-detector): rules first, Claude for the rest
+
 The two tools being compared:
 
 - [ssh-log-analyzer](https://github.com/rrahulvenkat/ssh-log-analyzer): regular
